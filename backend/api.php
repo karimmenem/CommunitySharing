@@ -1,13 +1,13 @@
 <?php
-require_once 'config.php'; // Include database configuration
+require_once 'config.php'; // database configuration
 
-// CRUD Functions
+// My Functions
 function createPost($userId, $categoryId, $title, $description) {
     global $pdo;
     $sql = "INSERT INTO Posts (userId, categoryId, title, description) VALUES (:userId, :categoryId, :title, :description)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':userId' => $userId, ':categoryId' => $categoryId, ':title' => $title, ':description' => $description]);
-    return $pdo->lastInsertId(); // Return the ID of the created post
+    return $pdo->lastInsertId(); // This will return the ID of the created post
 }
 
 function readPosts() {
@@ -24,7 +24,7 @@ function updatePost($postId, $title, $description) {
     $sql = "UPDATE Posts SET title = :title, description = :description, updatedAt = NOW() WHERE postId = :postId";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':postId' => $postId, ':title' => $title, ':description' => $description]);
-    return $stmt->rowCount(); // Return the number of rows updated
+    return $stmt->rowCount(); // This will return the number of rows updated
 }
 
 function deletePost($postId) {
@@ -32,13 +32,12 @@ function deletePost($postId) {
     $sql = "DELETE FROM Posts WHERE postId = :postId";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':postId' => $postId]);
-    return $stmt->rowCount(); // Return the number of rows deleted
+    return $stmt->rowCount(); // This will return the number of rows deleted
 }
 
-// Get the request method
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Handle Requests
+// Handling the Requests
 switch ($method) {
     case 'GET':
         $posts = readPosts();
@@ -51,7 +50,7 @@ switch ($method) {
             $postId = createPost($input['userId'], $input['categoryId'], $input['title'], $input['description']);
             echo json_encode(["message" => "Post created successfully", "postId" => $postId]);
         } else {
-            http_response_code(400); // Bad Request
+            http_response_code(400); 
             echo json_encode(["message" => "Invalid input"]);
         }
         break;
@@ -62,7 +61,7 @@ switch ($method) {
             $rowsUpdated = updatePost($input['postId'], $input['title'], $input['description']);
             echo json_encode(["message" => "Post updated successfully", "rowsUpdated" => $rowsUpdated]);
         } else {
-            http_response_code(400); // Bad Request
+            http_response_code(400); 
             echo json_encode(["message" => "Invalid input"]);
         }
         break;
@@ -72,13 +71,13 @@ switch ($method) {
             $rowsDeleted = deletePost($_GET['postId']);
             echo json_encode(["message" => "Post deleted successfully", "rowsDeleted" => $rowsDeleted]);
         } else {
-            http_response_code(400); // Bad Request
+            http_response_code(400); 
             echo json_encode(["message" => "Invalid input"]);
         }
         break;
 
     default:
-        http_response_code(405); // Method Not Allowed
+        http_response_code(405); // Not Allowed
         echo json_encode(["message" => "Method not allowed"]);
 }
 ?>
